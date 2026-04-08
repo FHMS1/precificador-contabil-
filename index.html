@@ -5,107 +5,431 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simulador de Precificação — Êxito Contábil</title>
 <style>
+  /* ===== VARIÁVEIS DE DESIGN ===== */
   :root{
-    --bg:#f5f4f0;--card:#fff;--border:rgba(0,0,0,.10);--border-strong:rgba(0,0,0,.18);
-    --text:#1a1a18;--text-sec:#6b6b66;--text-ter:#9c9b96;
-    --success-bg:#eaf3de;--success:#3b6d11;
-    --warning-bg:#faeeda;--warning:#854f0b;
-    --danger-bg:#fcebeb;--danger:#a32d2d;
-    --info-bg:#e6f1fb;--info:#185fa5;
+    --bg:#f0f2f5;
+    --card:#ffffff;
+    --border:rgba(0,0,0,.08);
+    --border-strong:rgba(0,0,0,.16);
+    --text:#1a1a1f;
+    --text-sec:#5a5a6a;
+    --text-ter:#9898a8;
+    --success-bg:#e8f5e0;--success:#2d6a0a;
+    --warning-bg:#fef3e2;--warning:#7a4800;
+    --danger-bg:#fde8e8;--danger:#9b2020;
+    --info-bg:#e4f0fc;--info:#1455a0;
     --exito:#1b4657;--exito-dark:#133240;--exito-green:#6fcc5a;
-    --r:12px;--rs:8px;
+    --exito-light:rgba(27,70,87,.08);
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+    --shadow-lg:0 8px 24px rgba(0,0,0,.10),0 4px 8px rgba(0,0,0,.06);
+    --r:14px;--rs:9px;
+    --transition:all .18s ease;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;padding-bottom:48px}
-  header{background:var(--exito);margin-bottom:20px;position:relative;overflow:hidden}
-  header::before{content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(111,204,90,.08)}
-  header::after{content:"";position:absolute;bottom:-60px;right:40px;width:120px;height:120px;border-radius:50%;background:rgba(111,204,90,.06)}
-  .hi{max-width:600px;margin:0 auto;padding:20px;display:flex;align-items:center;gap:16px;position:relative;z-index:1}
-  .hi img{height:58px;width:auto;flex-shrink:0}
-  .hi-div{width:1px;height:44px;background:rgba(255,255,255,.2);flex-shrink:0}
-  .hi h1{font-size:15px;font-weight:600;color:#fff;letter-spacing:-.01em}
-  .hi p{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
 
-  .wrap{max-width:600px;margin:0 auto;padding:0 16px}
-  .card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:14px}
-  .card-dest{border:1.5px solid var(--exito)}
-  .sec{font-size:10px;font-weight:600;color:var(--text-ter);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px}
+  /* ===== RESET E BASE ===== */
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Inter",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-size:14px;
+    line-height:1.65;
+    padding-bottom:56px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== HEADER ===== */
+  header{
+    background:linear-gradient(135deg,var(--exito-dark) 0%,var(--exito) 60%,#1e5570 100%);
+    margin-bottom:24px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:var(--shadow-md);
+  }
+  header::before{
+    content:"";position:absolute;top:-50px;right:-50px;
+    width:220px;height:220px;border-radius:50%;
+    background:rgba(111,204,90,.10);
+  }
+  header::after{
+    content:"";position:absolute;bottom:-70px;right:50px;
+    width:140px;height:140px;border-radius:50%;
+    background:rgba(111,204,90,.07);
+  }
+  .hi{max-width:640px;margin:0 auto;padding:22px 20px;display:flex;align-items:center;gap:18px;position:relative;z-index:1}
+  .hi img{height:60px;width:auto;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+  .hi-div{width:1px;height:46px;background:rgba(255,255,255,.22);flex-shrink:0}
+  .hi h1{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.02em;line-height:1.3}
+  .hi p{font-size:11.5px;color:rgba(255,255,255,.5);margin-top:3px;letter-spacing:.01em}
+
+  /* ===== LAYOUT ===== */
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px}
+
+  /* ===== CARDS ===== */
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--r);
+    padding:18px 20px;
+    margin-bottom:16px;
+    box-shadow:var(--shadow-sm);
+    transition:box-shadow .2s;
+  }
+  .card:hover{box-shadow:var(--shadow-md)}
+  .card-dest{
+    border:1.5px solid var(--exito);
+    box-shadow:0 0 0 3px var(--exito-light),var(--shadow-sm);
+  }
+  .card-dest:hover{box-shadow:0 0 0 3px var(--exito-light),var(--shadow-md)}
+
+  /* ===== SEÇÕES ===== */
+  .sec{
+    font-size:10.5px;font-weight:700;color:var(--text-ter);
+    letter-spacing:.08em;text-transform:uppercase;
+    margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .sec::after{
+    content:"";flex:1;height:1px;background:var(--border);
+  }
   .sec-dest{color:var(--exito)}
-  .row{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);gap:8px}
+  .sec-dest::after{background:rgba(27,70,87,.15)}
+
+  /* ===== LINHAS DE DADOS ===== */
+  .row{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    padding:9px 0;border-bottom:1px solid var(--border);gap:8px;
+  }
   .row:last-child{border-bottom:none}
-  .lbl{color:var(--text-sec);flex:1;font-size:13px}
+  .lbl{color:var(--text-sec);flex:1;font-size:13px;font-weight:500}
   .sub{font-size:11px;color:var(--text-ter);margin-top:2px;line-height:1.5}
-  .val{font-weight:600;white-space:nowrap;padding-top:1px}
+  .val{font-weight:700;white-space:nowrap;padding-top:1px;font-size:13.5px}
   .neg{color:var(--danger)}.pos{color:var(--success)}.neu{color:var(--text-sec)}
-  .divider{border:none;border-top:0.5px solid var(--border);margin:8px 0}
-  .trow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;font-size:14px;font-weight:600}
-  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0}
+  .trow{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 0;font-size:14px;font-weight:700;
+  }
+
+  /* ===== BADGES ===== */
+  .badge{
+    display:inline-block;padding:3px 11px;border-radius:20px;
+    font-size:11px;font-weight:700;letter-spacing:.02em;
+  }
   .bg{background:var(--success-bg);color:var(--success)}
   .ba{background:var(--warning-bg);color:var(--warning)}
   .br{background:var(--danger-bg);color:var(--danger)}
   .bi{background:var(--info-bg);color:var(--info)}
-  .alert-box{border-radius:var(--rs);padding:12px 14px;font-size:12px;margin-bottom:14px;line-height:1.6;display:none}
-  .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-  .metric{background:var(--bg);border-radius:var(--rs);padding:12px 14px;border:0.5px solid var(--border)}
-  .mlbl{font-size:11px;color:var(--text-sec);margin-bottom:4px}
-  .mval{font-size:18px;font-weight:700}
-  .irow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-  .irow label{font-size:13px;color:var(--text-sec);flex:1}
-  .irow input,.irow select{width:130px;padding:7px 10px;border:0.5px solid var(--border-strong);border-radius:var(--rs);font-size:13px;color:var(--text);background:#fff;outline:none}
-  .irow input:focus,.irow select:focus{border-color:var(--exito)}
-  .estado-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-  .estado-box{background:var(--bg);border-radius:var(--rs);padding:10px 12px;border:0.5px solid var(--border)}
-  .estado-box label{font-size:11px;color:var(--text-ter);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
-  .estado-box select{width:100%;padding:7px 10px;border:0.5px solid var(--border-strong);border-radius:var(--rs);font-size:13px;color:var(--text);background:#fff;outline:none}
-  .estado-box select:focus{border-color:var(--exito)}
-  .difal-tag{display:inline-flex;align-items:center;gap:6px;background:var(--info-bg);color:var(--info);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;margin-bottom:10px;flex-wrap:wrap}
-  .itoggle{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-  .itoggle label{font-size:13px;color:var(--text-sec);flex:1;cursor:pointer}
-  .tog{position:relative;width:36px;height:20px;background:var(--border-strong);border-radius:10px;cursor:pointer;transition:background .2s;flex-shrink:0}
+
+  /* ===== ALERTAS ===== */
+  .alert-box{
+    border-radius:var(--rs);padding:12px 16px;
+    font-size:12.5px;margin-bottom:16px;line-height:1.6;
+    display:none;border-left:3px solid;
+  }
+
+  /* ===== MÉTRICAS ===== */
+  .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .metric{
+    background:var(--bg);border-radius:var(--rs);
+    padding:14px 16px;border:1px solid var(--border);
+    transition:var(--transition);
+    position:relative;overflow:hidden;
+  }
+  .metric::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--exito),var(--exito-green));
+    opacity:0;transition:opacity .2s;
+  }
+  .metric:hover::before{opacity:1}
+  .mlbl{font-size:11px;color:var(--text-sec);margin-bottom:6px;font-weight:500}
+  .mval{font-size:20px;font-weight:800;letter-spacing:-.02em}
+
+  /* ===== INPUTS ===== */
+  .irow{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:relative}
+  .irow label{font-size:13px;color:var(--text-sec);flex:1;font-weight:500}
+  .irow input,.irow select{
+    width:136px;padding:8px 11px;
+    border:1.5px solid var(--border-strong);
+    border-radius:var(--rs);
+    font-size:13px;color:var(--text);
+    background:#fff;outline:none;
+    transition:border-color .15s,box-shadow .15s;
+    font-family:inherit;
+  }
+  .irow input:focus,.irow select:focus{
+    border-color:var(--exito);
+    box-shadow:0 0 0 3px var(--exito-light);
+  }
+  .irow input:hover:not(:focus),.irow select:hover:not(:focus){
+    border-color:rgba(0,0,0,.28);
+  }
+
+  /* ===== TOOLTIP ===== */
+  .tooltip-wrap{position:relative;display:inline-flex;align-items:center;margin-left:4px;cursor:help}
+  .tooltip-icon{
+    width:15px;height:15px;border-radius:50%;
+    background:var(--text-ter);color:#fff;
+    font-size:9px;font-weight:700;
+    display:inline-flex;align-items:center;justify-content:center;
+    flex-shrink:0;line-height:1;
+    transition:background .15s;
+  }
+  .tooltip-wrap:hover .tooltip-icon{background:var(--exito)}
+  .tooltip-box{
+    position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+    background:rgba(20,20,30,.92);color:#fff;
+    font-size:11.5px;line-height:1.55;
+    padding:8px 12px;border-radius:8px;
+    width:220px;white-space:normal;
+    pointer-events:none;opacity:0;
+    transition:opacity .15s,transform .15s;
+    z-index:100;
+    transform:translateX(-50%) translateY(4px);
+    box-shadow:var(--shadow-lg);
+    font-weight:400;
+  }
+  .tooltip-box::after{
+    content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:5px solid transparent;border-top-color:rgba(20,20,30,.92);
+  }
+  .tooltip-wrap:hover .tooltip-box{
+    opacity:1;transform:translateX(-50%) translateY(0);
+  }
+
+  /* ===== ESTADOS ===== */
+  .estado-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .estado-box{
+    background:var(--bg);border-radius:var(--rs);
+    padding:12px 14px;border:1px solid var(--border);
+    transition:border-color .15s;
+  }
+  .estado-box:focus-within{border-color:var(--exito)}
+  .estado-box label{
+    font-size:10.5px;color:var(--text-ter);display:block;
+    margin-bottom:7px;text-transform:uppercase;
+    letter-spacing:.06em;font-weight:700;
+  }
+  .estado-box select{
+    width:100%;padding:8px 10px;
+    border:1.5px solid var(--border-strong);
+    border-radius:var(--rs);font-size:13px;
+    color:var(--text);background:#fff;outline:none;
+    transition:border-color .15s,box-shadow .15s;
+    font-family:inherit;
+  }
+  .estado-box select:focus{
+    border-color:var(--exito);
+    box-shadow:0 0 0 3px var(--exito-light);
+  }
+
+  /* ===== TAG DIFAL ===== */
+  .difal-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--info-bg);color:var(--info);
+    border-radius:20px;padding:5px 14px;
+    font-size:12px;font-weight:600;
+    margin-bottom:12px;flex-wrap:wrap;
+    border:1px solid rgba(20,85,160,.12);
+  }
+
+  /* ===== TOGGLE ===== */
+  .itoggle{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .itoggle label{font-size:13px;color:var(--text-sec);flex:1;cursor:pointer;font-weight:500}
+  .tog{
+    position:relative;width:38px;height:22px;
+    background:var(--border-strong);border-radius:11px;
+    cursor:pointer;transition:background .2s;flex-shrink:0;
+  }
   .tog.on{background:var(--exito)}
-  .tog::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s}
+  .tog::after{
+    content:"";position:absolute;top:3px;left:3px;
+    width:16px;height:16px;background:#fff;border-radius:50%;
+    transition:transform .2s;
+    box-shadow:0 1px 3px rgba(0,0,0,.2);
+  }
   .tog.on::after{transform:translateX(16px)}
   .cf-row{display:none}.cf-row.v{display:flex}
-  .regime-tabs{display:flex;gap:8px;margin-bottom:14px}
-  .rtab{flex:1;padding:9px;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--border-strong);background:transparent;color:var(--text-sec);text-align:center;transition:all .15s}
-  .rtab.active{background:var(--exito);color:#fff;border-color:var(--exito)}
+
+  /* ===== ABAS DE REGIME ===== */
+  .regime-tabs{display:flex;gap:8px;margin-bottom:16px}
+  .rtab{
+    flex:1;padding:10px;border-radius:var(--rs);
+    font-size:13px;font-weight:600;cursor:pointer;
+    border:1.5px solid var(--border-strong);
+    background:transparent;color:var(--text-sec);
+    text-align:center;transition:var(--transition);
+    font-family:inherit;
+  }
+  .rtab:hover:not(.active){
+    background:var(--bg);border-color:rgba(0,0,0,.24);
+    color:var(--text);
+  }
+  .rtab.active{
+    background:var(--exito);color:#fff;
+    border-color:var(--exito);
+    box-shadow:0 2px 8px rgba(27,70,87,.3);
+  }
   .regime-block{display:none}.regime-block.show{display:block}
-  .barra{display:flex;height:22px;border-radius:6px;overflow:hidden;width:100%;margin:10px 0 6px}
-  .bleg{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+
+  /* ===== BARRA DE COMPOSIÇÃO ===== */
+  .barra{
+    display:flex;height:24px;border-radius:8px;
+    overflow:hidden;width:100%;margin:12px 0 8px;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.1);
+  }
+  .barra div{transition:width .3s ease}
+  .bleg{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
   .bleg span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-sec)}
-  .bleg i{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0}
+  .bleg i{width:10px;height:10px;border-radius:3px;display:inline-block;flex-shrink:0}
+
+  /* ===== TABELA DE PREÇOS ===== */
   .ptable{width:100%;border-collapse:collapse;font-size:13px}
-  .ptable th{color:var(--text-ter);font-weight:600;font-size:11px;padding:6px 8px;text-align:left;border-bottom:0.5px solid var(--border);letter-spacing:.04em;text-transform:uppercase}
+  .ptable th{
+    color:var(--text-ter);font-weight:700;font-size:10.5px;
+    padding:7px 9px;text-align:left;
+    border-bottom:1px solid var(--border);
+    letter-spacing:.05em;text-transform:uppercase;
+  }
   .ptable th:not(:first-child){text-align:right}
-  .ptable td{padding:8px;border-bottom:0.5px solid var(--border)}
+  .ptable td{padding:9px;border-bottom:1px solid var(--border)}
   .ptable td:not(:first-child){text-align:right}
   .ptable tr:last-child td{border-bottom:none}
-  .hist-item{background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:8px;border:0.5px solid var(--border);cursor:pointer;transition:border-color .15s}
-  .hist-item:hover{border-color:var(--exito)}
+  .ptable tr:hover td{background:rgba(0,0,0,.02)}
+
+  /* ===== HISTÓRICO ===== */
+  .hist-item{
+    background:var(--bg);border-radius:var(--rs);
+    padding:11px 15px;margin-bottom:9px;
+    border:1px solid var(--border);cursor:pointer;
+    transition:var(--transition);
+  }
+  .hist-item:hover{border-color:var(--exito);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
   .hist-item:last-child{margin-bottom:0}
-  .hist-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .hist-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
   .hist-title{font-size:12px;font-weight:600;color:var(--text)}
   .hist-time{font-size:11px;color:var(--text-ter)}
-  .hist-vals{display:flex;gap:12px;font-size:11px;color:var(--text-sec);flex-wrap:wrap}
-  .hist-empty{font-size:13px;color:var(--text-ter);text-align:center;padding:16px 0}
+  .hist-vals{display:flex;gap:14px;font-size:11px;color:var(--text-sec);flex-wrap:wrap}
+  .hist-empty{font-size:13px;color:var(--text-ter);text-align:center;padding:20px 0}
 
-  .aviso{background:var(--warning-bg);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--warning);margin-bottom:10px;line-height:1.7}
-  @media print{header{-webkit-print-color-adjust:exact;print-color-adjust:exact}.fab-wrap{display:none}body{padding-bottom:0}}
-  .fab-wrap{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:999}
-  .fab{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s,opacity .15s;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-  .fab:hover{transform:scale(1.10)}
+  /* ===== AVISO ===== */
+  .aviso{
+    background:var(--warning-bg);border-radius:var(--rs);
+    padding:11px 15px;font-size:12px;color:var(--warning);
+    margin-bottom:12px;line-height:1.7;
+    border-left:3px solid var(--warning);
+  }
+
+  /* ===== BOTÕES ===== */
+  .btn-primary{
+    width:100%;padding:11px;
+    background:var(--exito);color:#fff;
+    border:none;border-radius:var(--rs);
+    font-size:13.5px;font-weight:600;cursor:pointer;
+    font-family:inherit;
+    transition:var(--transition);
+    box-shadow:0 2px 6px rgba(27,70,87,.25);
+    letter-spacing:.01em;
+  }
+  .btn-primary:hover{
+    background:var(--exito-dark);
+    box-shadow:0 4px 12px rgba(27,70,87,.35);
+    transform:translateY(-1px);
+  }
+  .btn-primary:active{transform:translateY(0);box-shadow:0 1px 4px rgba(27,70,87,.2)}
+
+  .btn-secondary{
+    width:100%;padding:10px;
+    background:transparent;
+    border:1.5px solid var(--border-strong);
+    border-radius:var(--rs);
+    font-size:13px;color:var(--text-sec);cursor:pointer;
+    font-family:inherit;transition:var(--transition);
+  }
+  .btn-secondary:hover{
+    border-color:var(--exito);color:var(--exito);
+    background:var(--exito-light);
+  }
+
+  /* ===== FAB ===== */
+  @media print{
+    header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .fab-wrap{display:none}
+    body{padding-bottom:0}
+  }
+  .fab-wrap{
+    position:fixed;right:18px;top:50%;
+    transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:10px;z-index:999;
+  }
+  .fab{
+    width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s,box-shadow .15s;
+    box-shadow:var(--shadow-md);
+  }
+  .fab:hover{transform:scale(1.12);box-shadow:var(--shadow-lg)}
   .fab:active{transform:scale(0.95)}
-  .fab-print{background:#fff;border:0.5px solid var(--border-strong)}
+  .fab-print{background:#fff;border:1px solid var(--border-strong)}
   .fab-print svg{color:var(--text-sec)}
   .fab-save{background:var(--exito)}
   .fab-save svg{color:#fff}
-  .fab-tip{position:absolute;right:52px;background:rgba(0,0,0,.75);color:#fff;font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;top:50%;transform:translateY(-50%)}
+  .fab-tip{
+    position:absolute;right:54px;
+    background:rgba(10,10,20,.82);color:#fff;
+    font-size:11px;padding:5px 10px;border-radius:6px;
+    white-space:nowrap;opacity:0;pointer-events:none;
+    transition:opacity .15s;top:50%;transform:translateY(-50%);
+    box-shadow:var(--shadow-sm);
+  }
   .fab-wrap .fab-group:hover .fab-tip{opacity:1}
   .fab-group{position:relative;display:flex;align-items:center}
   @media(max-width:500px){.fab-wrap{right:10px}}
-  footer{max-width:600px;margin:24px auto 0;padding:16px 16px 0;font-size:11px;color:var(--text-ter);text-align:center;line-height:1.8;border-top:0.5px solid var(--border)}
+
+  /* ===== FOOTER ===== */
+  footer{
+    max-width:640px;margin:28px auto 0;
+    padding:18px 16px 0;
+    font-size:11px;color:var(--text-ter);
+    text-align:center;line-height:1.9;
+    border-top:1px solid var(--border);
+  }
   footer strong{color:var(--exito)}
-  @media(max-width:400px){.mgrid{grid-template-columns:repeat(2,1fr)}.mval{font-size:15px}.estado-grid{grid-template-columns:1fr}}
+
+  /* ===== GLOSSÁRIO ===== */
+  .glossario-item{
+    padding:10px 0;border-bottom:1px solid var(--border);
+    cursor:pointer;
+  }
+  .glossario-item:last-child{border-bottom:none}
+  .glossario-lbl{
+    font-size:13px;font-weight:600;color:var(--text);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .glossario-lbl::after{
+    content:"▸";font-size:10px;color:var(--text-ter);
+    transition:transform .2s;
+  }
+  .glossario-item.open .glossario-lbl::after{transform:rotate(90deg)}
+  .glossario-sub{
+    font-size:12px;color:var(--text-sec);
+    line-height:1.65;max-height:0;overflow:hidden;
+    transition:max-height .25s ease,padding .2s;
+  }
+  .glossario-item.open .glossario-sub{max-height:200px;padding-top:6px}
+
+  /* ===== RESPONSIVO ===== */
+  @media(max-width:480px){
+    .mgrid{grid-template-columns:repeat(2,1fr)}
+    .mval{font-size:17px}
+    .estado-grid{grid-template-columns:1fr}
+    .card{padding:14px 15px}
+    .hi h1{font-size:14px}
+  }
+  @media(max-width:360px){
+    .mgrid{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
@@ -123,44 +447,59 @@
 
 <div class="wrap">
 
-
-
-
-
-  <!-- REGIME -->
+  <!-- REGIME TRIBUTÁRIO -->
   <div class="card">
     <div class="sec">Regime tributário</div>
     <div class="regime-tabs">
       <button class="rtab active" id="tab-sn" onclick="setRegime('sn')">Simples Nacional</button>
       <button class="rtab" id="tab-lp" onclick="setRegime('lp')">Lucro Presumido</button>
     </div>
-
     <!-- Simples Nacional -->
     <div class="regime-block show" id="bloco-sn">
       <div class="aviso">
-        <strong>Simples Nacional — PB:</strong> A alíquota de <strong>3,14%</strong> é fixa apenas para faturamento acumulado nos últimos 12 meses <strong>até R$&nbsp;180.000</strong> (1ª faixa com redutor ICMS/PB de 63,23%). A partir da 2ª faixa a alíquota efetiva é calculada mensalmente no <strong>PGDAS-D</strong>. <strong>Atualize este campo todo mês</strong> com a alíquota efetiva apurada.
+        <strong>Simples Nacional — PB:</strong> A alíquota de <strong>3,14%</strong> é fixa apenas para faturamento acumulado nos últimos 12 meses <strong>até R$ 180.000</strong> (1ª faixa com redutor ICMS/PB de 63,23%). A partir da 2ª faixa a alíquota efetiva é calculada mensalmente no <strong>PGDAS-D</strong>. <strong>Atualize este campo todo mês</strong> com a alíquota efetiva apurada.
       </div>
       <div class="irow">
-        <label>Alíquota Simples Nacional (%)</label>
-        <input type="number" id="simples" value="3.14" min="0" step="0.01" oninput="recalc()">
+        <label>
+          Alíquota Simples Nacional (%)
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon">?</span>
+            <span class="tooltip-box">Informe a alíquota efetiva do mês, obtida no PGDAS-D. Para a 1ª faixa na PB, o valor padrão é 3,14%.</span>
+          </span>
+        </label>
+        <input type="number" id="simples" value="3.14" min="0" max="20" step="0.01" oninput="recalc()">
       </div>
     </div>
-
     <!-- Lucro Presumido -->
     <div class="regime-block" id="bloco-lp">
-      <div style="background:var(--info-bg);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--info);margin-bottom:12px;line-height:1.7">
+      <div style="background:var(--info-bg);border-radius:var(--rs);padding:11px 15px;font-size:12px;color:var(--info);margin-bottom:14px;line-height:1.7;border:1px solid rgba(20,85,160,.12)">
         <strong>Lucro Presumido — Comércio:</strong> O ICMS é apurado com crédito da entrada (NF + DIFAL) abatido do débito da saída. PIS/COFINS no regime cumulativo sobre o faturamento. IRPJ e CSLL sobre a receita com base de presunção. Alíquotas editáveis abaixo.
       </div>
       <div class="irow">
-        <label>PIS + COFINS (%)</label>
+        <label>PIS + COFINS (%)
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon">?</span>
+            <span class="tooltip-box">Regime cumulativo: PIS 0,65% + COFINS 3,00% = 3,65% sobre o faturamento bruto.</span>
+          </span>
+        </label>
         <input type="number" id="lp-piscofins" value="3.65" min="0" step="0.01" oninput="recalc()">
       </div>
       <div class="irow">
-        <label>IRPJ — presunção 8% × 15% (%)</label>
+        <label>IRPJ — presunção 8% × 15% (%)
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon">?</span>
+            <span class="tooltip-box">Para comércio: base de presunção 8% × alíquota IRPJ 15% = 1,20% sobre a receita bruta.</span>
+          </span>
+        </label>
         <input type="number" id="lp-irpj" value="1.20" min="0" step="0.01" oninput="recalc()">
       </div>
       <div class="irow">
-        <label>CSLL — presunção 12% × 9% (%)</label>
+        <label>CSLL — presunção 12% × 9% (%)
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon">?</span>
+            <span class="tooltip-box">Para comércio: base de presunção 12% × alíquota CSLL 9% = 1,08% sobre a receita bruta.</span>
+          </span>
+        </label>
         <input type="number" id="lp-csll" value="1.08" min="0" step="0.01" oninput="recalc()">
       </div>
       <div style="font-size:11px;color:var(--text-ter);margin-top:4px;line-height:1.6">
@@ -221,17 +560,35 @@
   <div class="card">
     <div class="sec">Parâmetros</div>
     <div class="irow">
-      <label>Custo do produto (R$)</label>
-      <input type="number" id="custo" value="100" min="1" step="1" oninput="recalc()">
+      <label>
+        Custo do produto (R$)
+        <span class="tooltip-wrap">
+          <span class="tooltip-icon">?</span>
+          <span class="tooltip-box">Valor pago ao fornecedor pela mercadoria (NF de entrada), incluindo frete de entrada.</span>
+        </span>
+      </label>
+      <input type="number" id="custo" value="100" min="0.01" step="0.01" oninput="recalc()">
     </div>
     <div class="irow">
-      <label>Preço de venda (R$)</label>
-      <input type="number" id="venda" value="300" min="1" step="1" oninput="recalc()">
+      <label>
+        Preço de venda (R$)
+        <span class="tooltip-wrap">
+          <span class="tooltip-icon">?</span>
+          <span class="tooltip-box">Valor cobrado do cliente final. Deve cobrir custo, encargos e gerar resultado positivo.</span>
+        </span>
+      </label>
+      <input type="number" id="venda" value="300" min="0.01" step="0.01" oninput="recalc()">
     </div>
     <!-- Maquineta -->
     <div class="irow">
-      <label>Maquineta</label>
-      <select id="maq-sel" onchange="onMaqChange()" style="width:130px">
+      <label>
+        Maquineta
+        <span class="tooltip-wrap">
+          <span class="tooltip-icon">?</span>
+          <span class="tooltip-box">Selecione a operadora de pagamento. A taxa é descontada automaticamente no repasse.</span>
+        </span>
+      </label>
+      <select id="maq-sel" onchange="onMaqChange()" style="width:136px">
         <option value="10.62">SafraPay</option>
         <option value="1.49">Cielo Débito</option>
         <option value="2.49">Cielo Créd. vista</option>
@@ -248,7 +605,13 @@
       <input type="number" id="maq-taxa" value="10.62" min="0" step="0.01" oninput="recalc()">
     </div>
     <div class="itoggle">
-      <label>Incluir custo fixo rateado</label>
+      <label>
+        Incluir custo fixo rateado
+        <span class="tooltip-wrap">
+          <span class="tooltip-icon">?</span>
+          <span class="tooltip-box">Aluguel, energia, salários, contador etc. divididos por unidade vendida. Ativa o cálculo de resultado líquido.</span>
+        </span>
+      </label>
       <div class="tog" id="tog-cf" onclick="toggleCF()"></div>
     </div>
     <div class="irow cf-row" id="cf-row">
@@ -257,7 +620,7 @@
     </div>
   </div>
 
-  <!-- COMPOSIÇÃO -->
+  <!-- COMPOSIÇÃO DETALHADA -->
   <div class="card">
     <div class="sec">Composição detalhada</div>
     <div class="row">
@@ -295,11 +658,11 @@
       <div class="val neg" id="b-cf">—</div>
     </div>
     <div class="divider"></div>
-    <div class="trow" style="font-weight:400;font-size:13px">
+    <div class="trow" style="font-weight:500;font-size:13px">
       <span style="color:var(--text-sec)">Total de encargos</span>
       <span class="neg" id="b-enc">—</span>
     </div>
-    <div class="trow" style="font-weight:400;font-size:13px">
+    <div class="trow" style="font-weight:500;font-size:13px">
       <span style="color:var(--text-sec)">Custo total absorvido (custo + DIFAL)</span>
       <span id="b-custo-total">—</span>
     </div>
@@ -308,23 +671,32 @@
       <span>Resultado bruto</span>
       <span id="b-resultado">—</span>
     </div>
-    <div class="trow" id="row-liq" style="display:none;font-size:13px;border-top:0.5px solid var(--border);padding-top:8px">
-      <span style="font-weight:400;color:var(--text-sec)">Resultado líquido (após custo fixo)</span>
+    <div class="trow" id="row-liq" style="display:none;font-size:13px;border-top:1px solid var(--border);padding-top:9px">
+      <span style="font-weight:500;color:var(--text-sec)">Resultado líquido (após custo fixo)</span>
       <span id="b-liquido">—</span>
     </div>
-    <div style="margin-top:12px">
-      <div style="font-size:11px;color:var(--text-ter);margin-bottom:4px">Destino de cada R$ recebido</div>
+    <div style="margin-top:14px">
+      <div style="font-size:11px;color:var(--text-ter);margin-bottom:4px;font-weight:500">Destino de cada R$ recebido</div>
       <div class="barra" id="barra"></div>
       <div class="bleg" id="bleg"></div>
     </div>
   </div>
 
+  <!-- MÉTRICAS -->
   <div class="mgrid">
-    <div class="metric"><div class="mlbl">Margem bruta</div><div class="mval" id="m-margem">—</div></div>
-    <div class="metric"><div class="mlbl">Markup (venda/custo)</div><div class="mval" id="m-markup">—</div></div>
-    <div class="metric"><div class="mlbl" id="m3-lbl">% encargos / venda</div><div class="mval" id="m-enc">—</div></div>
+    <div class="metric">
+      <div class="mlbl">Margem bruta</div>
+      <div class="mval" id="m-margem">—</div>
+    </div>
+    <div class="metric">
+      <div class="mlbl">Markup (venda/custo)</div>
+      <div class="mval" id="m-markup">—</div>
+    </div>
+    <div class="metric">
+      <div class="mlbl" id="m3-lbl">% encargos / venda</div>
+      <div class="mval" id="m-enc">—</div>
+    </div>
   </div>
-
   <div class="alert-box" id="alerta"></div>
 
   <!-- RESUMO ALÍQUOTAS -->
@@ -368,7 +740,14 @@
   <div class="card">
     <div class="sec">Preço mínimo por margem desejada</div>
     <table class="ptable">
-      <thead><tr><th>Margem</th><th>Preço mínimo</th><th>Markup</th><th>Resultado bruto</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Margem</th>
+          <th>Preço mínimo</th>
+          <th>Markup</th>
+          <th>Resultado bruto</th>
+        </tr>
+      </thead>
       <tbody id="ptbody"></tbody>
     </table>
   </div>
@@ -376,64 +755,104 @@
   <!-- PREÇO SUGERIDO -->
   <div class="card card-dest">
     <div class="sec sec-dest">Preço sugerido por margem alvo</div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:140px">
-        <div style="font-size:11px;color:var(--text-ter);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Margem desejada</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="range" id="margem-alvo" min="1" max="70" value="30" step="1" style="flex:1;accent-color:var(--exito)" oninput="document.getElementById('margem-alvo-num').value=this.value;calcSugerido()">
-          <input type="number" id="margem-alvo-num" value="30" min="1" max="70" step="1" style="width:60px;padding:6px 8px;border:0.5px solid var(--border-strong);border-radius:var(--rs);font-size:14px;font-weight:600;color:var(--exito);text-align:center" oninput="document.getElementById('margem-alvo').value=this.value;calcSugerido()">
-          <span style="font-size:14px;font-weight:600;color:var(--exito)">%</span>
+        <div style="font-size:10.5px;color:var(--text-ter);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Margem desejada</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" id="margem-alvo" min="1" max="70" value="30" step="1"
+            style="flex:1;accent-color:var(--exito);height:6px;cursor:pointer"
+            oninput="document.getElementById('margem-alvo-num').value=this.value;calcSugerido()">
+          <input type="number" id="margem-alvo-num" value="30" min="1" max="70" step="1"
+            style="width:62px;padding:7px 9px;border:1.5px solid var(--border-strong);border-radius:var(--rs);font-size:15px;font-weight:700;color:var(--exito);text-align:center;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s"
+            oninput="document.getElementById('margem-alvo').value=this.value;calcSugerido()"
+            onfocus="this.style.borderColor='var(--exito)';this.style.boxShadow='0 0 0 3px var(--exito-light)'"
+            onblur="this.style.borderColor='';this.style.boxShadow=''">
+          <span style="font-size:15px;font-weight:700;color:var(--exito)">%</span>
         </div>
       </div>
     </div>
-    <div style="background:var(--bg);border-radius:var(--rs);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div style="background:var(--bg);border-radius:var(--rs);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border:1px solid var(--border)">
       <div>
-        <div style="font-size:11px;color:var(--text-sec);margin-bottom:2px">Preço mínimo sugerido</div>
-        <div style="font-size:28px;font-weight:700;color:var(--exito);letter-spacing:-.02em" id="preco-sugerido">—</div>
+        <div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;font-weight:500">Preço mínimo sugerido</div>
+        <div style="font-size:30px;font-weight:800;color:var(--exito);letter-spacing:-.03em;line-height:1" id="preco-sugerido">—</div>
       </div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:20px;flex-wrap:wrap">
         <div style="text-align:center">
-          <div style="font-size:11px;color:var(--text-sec);margin-bottom:2px">Markup</div>
-          <div style="font-size:16px;font-weight:700" id="sug-markup">—</div>
+          <div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;font-weight:500">Markup</div>
+          <div style="font-size:18px;font-weight:800;letter-spacing:-.01em" id="sug-markup">—</div>
         </div>
         <div style="text-align:center">
-          <div style="font-size:11px;color:var(--text-sec);margin-bottom:2px">Resultado</div>
-          <div style="font-size:16px;font-weight:700;color:var(--success)" id="sug-resultado">—</div>
+          <div style="font-size:11px;color:var(--text-sec);margin-bottom:3px;font-weight:500">Resultado</div>
+          <div style="font-size:18px;font-weight:800;color:var(--success);letter-spacing:-.01em" id="sug-resultado">—</div>
         </div>
       </div>
     </div>
-    <div style="margin-top:8px;font-size:11px;color:var(--text-ter);line-height:1.6" id="sug-detalhe"></div>
-    <button onclick="aplicarPrecoSugerido()" style="margin-top:12px;width:100%;padding:10px;background:var(--exito);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer">
+    <div style="margin-top:10px;font-size:11px;color:var(--text-ter);line-height:1.65" id="sug-detalhe"></div>
+    <button class="btn-primary" onclick="aplicarPrecoSugerido()" style="margin-top:14px">
       Usar este preço nos campos acima ↑
     </button>
   </div>
 
   <!-- HISTÓRICO -->
   <div class="card">
-    <div class="sec">Histórico da sessão <span id="hist-count" style="color:var(--text-ter);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px"></span></div>
+    <div class="sec">
+      Histórico da sessão
+      <span id="hist-count" style="color:var(--text-ter);font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;margin-left:2px"></span>
+    </div>
     <div id="hist-list"><div class="hist-empty">Nenhuma simulação salva ainda.</div></div>
-    <button onclick="salvarSim()" style="margin-top:10px;width:100%;padding:9px;background:transparent;border:0.5px solid var(--border-strong);border-radius:var(--rs);font-size:13px;color:var(--text-sec);cursor:pointer">Salvar simulação atual</button>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn-secondary" style="flex:1" onclick="salvarSim()">Salvar simulação atual</button>
+      <button class="btn-secondary" style="flex:1" onclick="limparHistorico()" id="btn-limpar" style="display:none">Limpar histórico</button>
+    </div>
   </div>
 
   <!-- GLOSSÁRIO -->
   <div class="card">
     <div class="sec">Entenda os conceitos</div>
-    <div class="row"><div><div class="lbl">Custo do produto</div><div class="sub">Valor pago ao fornecedor pela mercadoria (NF de entrada). Compõe: preço do produto + frete de entrada + DIFAL. É a base sobre a qual todos os outros custos são calculados.</div></div></div>
-    <div class="row"><div><div class="lbl">Preço de venda</div><div class="sub">Valor cobrado do cliente final. Deve cobrir o custo do produto, todos os encargos (DIFAL, impostos, maquineta) e ainda gerar resultado positivo.</div></div></div>
-    <div class="row"><div><div class="lbl">Custo fixo</div><div class="sub">Despesas que existem independente do volume de vendas: aluguel, energia, salários, contador, internet. Para precificar corretamente, esse valor deve ser rateado por produto ou por unidade vendida.</div></div></div>
-    <div class="row"><div><div class="lbl">Margem bruta</div><div class="sub">Percentual do preço de venda que sobra após deduzir o custo do produto e todos os encargos. Não considera custos fixos operacionais. Fórmula: (Venda − Custo − Encargos) ÷ Venda.</div></div></div>
-    <div class="row"><div><div class="lbl">Markup</div><div class="sub">Quantas vezes o preço de venda é maior que o custo de compra. Markup 2× significa vender pelo dobro do custo. Um markup alto não garante boa margem se os encargos forem elevados.</div></div></div>
-    <div class="row"><div><div class="lbl">DIFAL — Diferencial de Alíquota de ICMS</div><div class="sub">Imposto cobrado quando a empresa compra mercadoria de outro estado. É a diferença entre a alíquota interna do estado destino e a alíquota interestadual, calculado "por dentro" conforme SEFAZ/PB.</div></div></div>
-    <div class="row"><div><div class="lbl">Simples Nacional</div><div class="sub">Regime tributário simplificado com recolhimento unificado no DAS. Alíquota incide sobre o faturamento e varia conforme receita acumulada dos últimos 12 meses. Na PB há redutor sobre a parcela do ICMS.</div></div></div>
-    <div class="row"><div><div class="lbl">Lucro Presumido</div><div class="sub">Regime onde o ICMS é apurado com crédito da entrada abatido do débito da saída. PIS e COFINS no regime cumulativo (3,65%). IRPJ e CSLL calculados sobre base de presunção da receita bruta.</div></div></div>
-    <div class="row"><div><div class="lbl">Taxa da maquineta</div><div class="sub">Percentual cobrado pela operadora sobre cada venda realizada. Incide sobre o valor total recebido e é descontado no repasse. Deve ser considerado na composição do preço de venda.</div></div></div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Custo do produto</div>
+      <div class="glossario-sub">Valor pago ao fornecedor pela mercadoria (NF de entrada). Compõe: preço do produto + frete de entrada + DIFAL. É a base sobre a qual todos os outros custos são calculados.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Preço de venda</div>
+      <div class="glossario-sub">Valor cobrado do cliente final. Deve cobrir o custo do produto, todos os encargos (DIFAL, impostos, maquineta) e ainda gerar resultado positivo.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Custo fixo</div>
+      <div class="glossario-sub">Despesas que existem independente do volume de vendas: aluguel, energia, salários, contador, internet. Para precificar corretamente, esse valor deve ser rateado por produto ou por unidade vendida.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Margem bruta</div>
+      <div class="glossario-sub">Percentual do preço de venda que sobra após deduzir o custo do produto e todos os encargos. Não considera custos fixos operacionais. Fórmula: (Venda − Custo − Encargos) ÷ Venda.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Markup</div>
+      <div class="glossario-sub">Quantas vezes o preço de venda é maior que o custo de compra. Markup 2× significa vender pelo dobro do custo. Um markup alto não garante boa margem se os encargos forem elevados.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">DIFAL — Diferencial de Alíquota de ICMS</div>
+      <div class="glossario-sub">Imposto cobrado quando a empresa compra mercadoria de outro estado. É a diferença entre a alíquota interna do estado destino e a alíquota interestadual, calculado "por dentro" conforme SEFAZ/PB.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Simples Nacional</div>
+      <div class="glossario-sub">Regime tributário simplificado com recolhimento unificado no DAS. Alíquota incide sobre o faturamento e varia conforme receita acumulada dos últimos 12 meses. Na PB há redutor sobre a parcela do ICMS.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Lucro Presumido</div>
+      <div class="glossario-sub">Regime onde o ICMS é apurado com crédito da entrada abatido do débito da saída. PIS e COFINS no regime cumulativo (3,65%). IRPJ e CSLL calculados sobre base de presunção da receita bruta.</div>
+    </div>
+    <div class="glossario-item" onclick="toggleGlossario(this)">
+      <div class="glossario-lbl">Taxa da maquineta</div>
+      <div class="glossario-sub">Percentual cobrado pela operadora sobre cada venda realizada. Incide sobre o valor total recebido e é descontado no repasse. Deve ser considerado na composição do preço de venda.</div>
+    </div>
   </div>
 
-</div>
+</div><!-- /wrap -->
 
+<!-- FABs -->
 <div class="fab-wrap">
   <div class="fab-group">
-    <button class="fab fab-print" onclick="window.print()" title="Imprimir">
+    <button class="fab fab-print" onclick="window.print()" title="Imprimir" hint="Imprimir">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="6 9 6 2 18 2 18 9"/>
         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
@@ -443,7 +862,7 @@
     <span class="fab-tip">Imprimir</span>
   </div>
   <div class="fab-group">
-    <button class="fab fab-save" onclick="salvarPDF()" title="Salvar PDF">
+    <button class="fab fab-save" onclick="salvarPDF()" title="Salvar PDF" hint="Salvar PDF">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="7 10 12 15 17 10"/>
@@ -455,25 +874,36 @@
 </div>
 
 <footer>
-  <strong>Êxito Contábil</strong> · Simulador de Precificação<br>
+  <strong>Êxito Contábil</strong> &nbsp;·&nbsp; Simulador de Precificação<br>
   Esta ferramenta é de apoio à decisão. Os valores são estimativas baseadas nas informações inseridas.<br>
   Consulte sempre seu contador para decisões fiscais e tributárias.
 </footer>
 
 <script>
-const ALIQ_INTERNA={AC:0.19,AL:0.20,AM:0.20,AP:0.18,BA:0.205,CE:0.20,DF:0.20,ES:0.17,GO:0.19,MA:0.23,MT:0.17,MS:0.17,MG:0.18,PA:0.19,PB:0.20,PR:0.195,PE:0.205,PI:0.225,RN:0.20,RS:0.17,RJ:0.22,RO:0.195,RR:0.20,SC:0.17,SP:0.18,SE:0.20,TO:0.20};
+// ===== CONSTANTES E ESTADO =====
+const ALIQ_INTERNA={
+  AC:0.19,AL:0.20,AM:0.20,AP:0.18,BA:0.205,CE:0.20,DF:0.20,ES:0.17,
+  GO:0.19,MA:0.23,MT:0.17,MS:0.17,MG:0.18,PA:0.19,PB:0.20,PR:0.195,
+  PE:0.205,PI:0.225,RN:0.20,RS:0.17,RJ:0.22,RO:0.195,RR:0.20,
+  SC:0.17,SP:0.18,SE:0.20,TO:0.20
+};
 const SUL_SUDESTE=['MG','SP','RJ','PR','RS','SC'];
 const NORTE_NE_CO_ES=['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MT','MS','PA','PB','PE','PI','RN','RO','RR','SE','TO'];
+
 let cfAtivo=false, historico=[], regime='sn';
 
-function fmt(v){return "R$\u00a0"+v.toFixed(2).replace(".",",")}
-function fmtP(v){return (v*100).toFixed(2).replace(".",",")+"%"}
+// ===== FORMATAÇÃO =====
+const fmtMoeda = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2,maximumFractionDigits:2});
+function fmt(v){ return fmtMoeda.format(v) }
+function fmtP(v){ return (v*100).toFixed(2).replace(".",",")+"%"; }
 
+// ===== CÁLCULOS =====
 function getInterestadual(o,d){
   if(o===d) return 0;
   if(SUL_SUDESTE.includes(o)&&NORTE_NE_CO_ES.includes(d)) return 0.07;
   return 0.12;
 }
+
 function calcDIFAL(custo,ai,ap){
   if(ai===0) return 0;
   const sem=custo*(1-ai);
@@ -491,8 +921,8 @@ function getParams(){
   const cf=cfAtivo?(parseFloat(document.getElementById("custo-fixo").value)||0):0;
   const base={
     orig,dest,ai,ap,maqTaxa,maqNome,cf,
-    custo:parseFloat(document.getElementById("custo").value)||0,
-    venda:parseFloat(document.getElementById("venda").value)||0,
+    custo:Math.max(0,parseFloat(document.getElementById("custo").value)||0),
+    venda:Math.max(0,parseFloat(document.getElementById("venda").value)||0),
   };
   if(regime==='sn'){
     base.simPct=parseFloat(document.getElementById("simples").value)/100||0;
@@ -514,11 +944,6 @@ function run(p, venda){
     simplesV=v*(p.simPct||0);
     impostos=simplesV;
   } else {
-    // ICMS débito por dentro sobre venda
-    const icmsDebito=(v/(1-p.ap))*p.ap - v*(p.ap/(1-p.ap))*0 ;
-    // Simplificado: icms débito = v * ap / (1-ap) ... na verdade débito = v * ap "por fora"
-    // No LP o ICMS incide por dentro na saída também: débito = venda * ap / (1 - ap) * (1-ap) = venda * ap
-    // Mas crédito = icms NF entrada (ai * custo) + difal
     const icmsCredito = p.custo * p.ai + d;
     icmsLiq = Math.max(v * p.ap - icmsCredito, 0);
     pisCofinsV = v * (p.pisCofins||0);
@@ -529,11 +954,14 @@ function run(p, venda){
   const enc=d+impostos+maq;
   const res=v-p.custo-enc;
   const liq=res-p.cf;
-  return{d,maq,simplesV,icmsLiq,pisCofinsV,irpjCsllV,impostos,enc,res,liq,
-    margem:v>0?res/v:0, margemLiq:v>0?liq/v:0,
+  return{
+    d,maq,simplesV,icmsLiq,pisCofinsV,irpjCsllV,impostos,enc,res,liq,
+    margem:v>0?res/v:0,
+    margemLiq:v>0?liq/v:0,
     markup:p.custo>0?v/p.custo:0,
     custoTotal:p.custo+d,
-    bc:p.ai>0?p.custo*(1-p.ai)/(1-p.ap):0};
+    bc:p.ai>0?p.custo*(1-p.ai)/(1-p.ap):0
+  };
 }
 
 function pMin(p,alvo){
@@ -546,6 +974,7 @@ function pMin(p,alvo){
   return null;
 }
 
+// ===== REGIME =====
 function setRegime(r){
   regime=r;
   document.getElementById("tab-sn").classList.toggle("active",r==='sn');
@@ -578,6 +1007,7 @@ function toggleCF(){
   recalc();
 }
 
+// ===== RECALCULAR =====
 function recalc(){
   const p=getParams();
   const r=run(p);
@@ -615,9 +1045,11 @@ function recalc(){
   document.getElementById("b-cf").textContent=fmt(p.cf);
 
   const resEl=document.getElementById("b-resultado");
-  resEl.textContent=fmt(r.res);resEl.className="val "+(r.res>=0?"pos":"neg");
+  resEl.textContent=fmt(r.res);
+  resEl.className="val "+(r.res>=0?"pos":"neg");
   const liqEl=document.getElementById("b-liquido");
-  liqEl.textContent=fmt(r.liq);liqEl.className="val "+(r.liq>=0?"pos":"neg");
+  liqEl.textContent=fmt(r.liq);
+  liqEl.className="val "+(r.liq>=0?"pos":"neg");
 
   const md=cfAtivo?r.margemLiq:r.margem;
   const mEl=document.getElementById("m-margem");
@@ -669,12 +1101,14 @@ function buildBarra(p,r){
 function buildAlerta(margem,res){
   const el=document.getElementById("alerta");
   if(res<0){
-    el.style.cssText="display:block;background:var(--danger-bg);color:var(--danger);border-radius:var(--rs);padding:12px 14px;font-size:12px;margin-bottom:14px";
-    el.textContent="Prejuízo de "+fmt(Math.abs(res))+" neste preço de venda.";
+    el.style.cssText="display:block;background:var(--danger-bg);color:var(--danger);border-radius:var(--rs);padding:12px 16px;font-size:12.5px;margin-bottom:16px;border-left:3px solid var(--danger)";
+    el.innerHTML="<strong>Atenção:</strong> Prejuízo de <strong>"+fmt(Math.abs(res))+"</strong> neste preço de venda.";
   } else if(margem<0.10){
-    el.style.cssText="display:block;background:var(--warning-bg);color:var(--warning);border-radius:var(--rs);padding:12px 14px;font-size:12px;margin-bottom:14px";
-    el.textContent="Margem de "+fmtP(margem)+" é baixa — pode não cobrir despesas fixas operacionais.";
-  } else{el.style.display="none";}
+    el.style.cssText="display:block;background:var(--warning-bg);color:var(--warning);border-radius:var(--rs);padding:12px 16px;font-size:12.5px;margin-bottom:16px;border-left:3px solid var(--warning)";
+    el.innerHTML="<strong>Atenção:</strong> Margem de <strong>"+fmtP(margem)+"</strong> é baixa — pode não cobrir despesas fixas operacionais.";
+  } else {
+    el.style.display="none";
+  }
 }
 
 function buildTabela(p){
@@ -684,10 +1118,12 @@ function buildTabela(p){
     const v=pMin(p,m);
     const r=v?run(p,v):null;
     const c=m>=0.3?"bg":m>=0.1?"ba":"bi";
-    h+=`<tr><td><span class="badge ${c}">${(m*100).toFixed(0)}%</span></td>
-      <td style="font-weight:600">${v?fmt(v):"—"}</td>
+    h+=`<tr>
+      <td><span class="badge ${c}">${(m*100).toFixed(0)}%</span></td>
+      <td style="font-weight:700">${v?fmt(v):"—"}</td>
       <td style="color:var(--text-sec)">${r?r.markup.toFixed(2).replace(".",",")+"\u00d7":"—"}</td>
-      <td style="color:var(--success);font-weight:500">${r?fmt(r.res):"—"}</td></tr>`;
+      <td style="color:var(--success);font-weight:600">${r?fmt(r.res):"—"}</td>
+    </tr>`;
   });
   document.getElementById("ptbody").innerHTML=h;
 }
@@ -718,27 +1154,65 @@ function aplicarPrecoSugerido(){
   recalc();
   const el=document.getElementById("venda");
   el.style.borderColor="var(--exito)";
-  setTimeout(function(){el.style.borderColor="";},1200);
+  el.style.boxShadow="0 0 0 3px var(--exito-light)";
+  setTimeout(function(){el.style.borderColor="";el.style.boxShadow="";},1400);
+  // Scroll suave até o campo de venda
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// ===== HISTÓRICO COM LOCALSTORAGE =====
+function carregarHistoricoStorage(){
+  try{
+    const saved=localStorage.getItem('precificador_historico');
+    if(saved) historico=JSON.parse(saved);
+  } catch(e){ historico=[]; }
+}
+
+function salvarHistoricoStorage(){
+  try{
+    localStorage.setItem('precificador_historico',JSON.stringify(historico));
+  } catch(e){}
 }
 
 function salvarSim(){
   const p=getParams();
   const r=run(p);
   const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  historico.unshift({...p,res:r.res,margem:r.margem,hora,regime});
-  if(historico.length>6) historico.pop();
+  const data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  historico.unshift({...p,res:r.res,margem:r.margem,hora,data,regime});
+  if(historico.length>8) historico.pop();
+  salvarHistoricoStorage();
+  renderHist();
+  // Feedback visual
+  const btn=event.target;
+  const orig=btn.textContent;
+  btn.textContent="✓ Salvo!";
+  btn.style.color="var(--success)";
+  btn.style.borderColor="var(--success)";
+  setTimeout(()=>{btn.textContent=orig;btn.style.color="";btn.style.borderColor="";},1500);
+}
+
+function limparHistorico(){
+  if(!confirm("Limpar todo o histórico?")) return;
+  historico=[];
+  salvarHistoricoStorage();
   renderHist();
 }
 
 function renderHist(){
   const el=document.getElementById("hist-list");
+  const btnLimpar=document.getElementById("btn-limpar");
   document.getElementById("hist-count").textContent=historico.length>0?"("+historico.length+")":"";
-  if(!historico.length){el.innerHTML='<div class="hist-empty">Nenhuma simulação salva ainda.</div>';return;}
+  if(btnLimpar) btnLimpar.style.display=historico.length>0?"block":"none";
+  if(!historico.length){
+    el.innerHTML='<div class="hist-empty">Nenhuma simulação salva ainda.</div>';
+    return;
+  }
   el.innerHTML=historico.map((h,i)=>`
     <div class="hist-item" onclick="carregarSim(${i})">
       <div class="hist-top">
         <span class="hist-title">${h.orig}\u2192${h.dest} · Custo ${fmt(h.custo)} · Venda ${fmt(h.venda)} · ${h.regime==='sn'?'Simples':'Lucro Pres.'}</span>
-        <span class="hist-time">${h.hora}</span>
+        <span class="hist-time">${h.data||''} ${h.hora}</span>
       </div>
       <div class="hist-vals">
         <span>Resultado: <strong style="color:${h.res>=0?"var(--success)":"var(--danger)"}">${fmt(h.res)}</strong></span>
@@ -758,16 +1232,26 @@ function carregarSim(i){
   if(h.cf>0&&!cfAtivo) toggleCF();
   if(h.cf>0) document.getElementById("custo-fixo").value=h.cf;
   recalc();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-recalc();
+// ===== GLOSSÁRIO INTERATIVO =====
+function toggleGlossario(el){
+  el.classList.toggle("open");
+}
 
+// ===== PDF =====
 function salvarPDF(){
   var orig = document.title;
   document.title = "Simulador_Precificacao_Exito_Contabil";
   window.print();
   setTimeout(function(){ document.title = orig; }, 1000);
 }
+
+// ===== INICIALIZAÇÃO =====
+carregarHistoricoStorage();
+renderHist();
+recalc();
 </script>
 </body>
 </html>
